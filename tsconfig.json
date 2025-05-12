@@ -18,18 +18,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/database": [
-        "libs/database/src"
-      ],
-      "@/database/*": [
-        "libs/database/src/*"
-      ],
-      "@/authguard": [
-        "libs/authguard/src"
-      ],
-      "@/authguard/*": [
-        "libs/authguard/src/*"
-      ]
+      "@app/database": ["libs/database/src"],
+      "@app/database/*": ["libs/database/src/*"],
+      "@app/authguard": ["libs/authguard/src"],
+      "@app/authguard/*": ["libs/authguard/src/*"]
     }
   }
 }
