@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,7 +23,7 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { username } });
 
     if (!user || user.password !== password) {
-      throw new Error('Invalid credentials');
+      throw new BadRequestException('Invalid password or username');
     }
     const payload = { username: user.username, id: user._id };
     return this.jwtService.sign(payload);
@@ -37,7 +37,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new Error('User already exists');
+      throw new BadRequestException('User already exists');
     }
     const newUser = this.userRepository.create({
       username,
@@ -54,7 +54,7 @@ export class AuthService {
       where: { _id: userId as unknown as ObjectId },
     });
     if (!user) {
-      throw new Error('User not found');
+      throw new BadRequestException('User not found');
     }
     return user;
   }
