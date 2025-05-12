@@ -1,5 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
+import { AuthGuard } from '@app/authguard';
+import { CreateAdminDto } from './dto';
 
 @Controller()
 export class AdminController {
@@ -8,5 +10,17 @@ export class AdminController {
   @Get()
   getHello(): string {
     return this.adminService.getHello();
+  }
+
+  @Get('admin')
+  @UseGuards(AuthGuard)
+  listAdmins() {
+    return this.adminService.listAdmins();
+  }
+
+  @Post('admin')
+  @UseGuards(AuthGuard)
+  createAdmin(@Body() adminData: CreateAdminDto) {
+    return this.adminService.createAdmin(adminData);
   }
 }
