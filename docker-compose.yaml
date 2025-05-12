@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./apps/auth-service/Dockerfile
+    env_file:
+      - .env
+
+  user-service:
+    build:
+      context: .
+      dockerfile: ./apps/user-service/Dockerfile
+    env_file:
+      - .env
+
+  admin-service:
+    build:
+      context: .
+      dockerfile: ./apps/admin-service/Dockerfile
+    env_file:
+      - .env
