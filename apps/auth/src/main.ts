@@ -1,8 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
-  await app.listen(process.env.USER_PORT ?? 24001);
+  const logger = new Logger();
+
+  const PORT = process.env.AUTH_PORT ?? 24002;
+
+  await app.listen(PORT);
+
+  logger.log(`APP RUNNING ON PORT: ${PORT}`);
 }
 bootstrap();
