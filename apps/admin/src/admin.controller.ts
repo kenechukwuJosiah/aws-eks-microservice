@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AuthGuard } from '@app/authguard';
 import { CreateAdminDto } from './dto';
@@ -20,7 +27,8 @@ export class AdminController {
 
   @Post('admin')
   @UseGuards(AuthGuard)
-  createAdmin(@Body() adminData: CreateAdminDto) {
-    return this.adminService.createAdmin(adminData);
+  createAdmin(@Body() adminData: CreateAdminDto, @Request() req) {
+    const createdById = req.user._id;
+    return this.adminService.createAdmin(adminData, createdById);
   }
 }
