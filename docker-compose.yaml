@@ -1,22 +1,31 @@
 version: '3.8'
+
+name: eks-demo
+
 services:
-  auth-service:
+  auth:
     build:
       context: .
-      dockerfile: ./apps/auth-service/Dockerfile
+      dockerfile: ./apps/auth/Dockerfile
+    ports:
+      - '${AUTH_PORT}:${AUTH_PORT}'
     env_file:
       - .env
 
-  user-service:
+  user:
     build:
       context: .
-      dockerfile: ./apps/user-service/Dockerfile
+      dockerfile: ./apps/users/Dockerfile
+    ports:
+      - '${USER_PORT}:${USER_PORT}'
     env_file:
       - .env
 
-  admin-service:
+  admin:
     build:
       context: .
-      dockerfile: ./apps/admin-service/Dockerfile
+      dockerfile: ./apps/admin/Dockerfile
+    ports:
+      - '${ADMIN_PORT}:${ADMIN_PORT}'
     env_file:
       - .env

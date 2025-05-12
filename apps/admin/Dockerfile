@@ -2,10 +2,16 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-COPY . .
+COPY package*.json tsconfig.build.json ./
 
-RUN npm install
+RUN npm i
+
+COPY . .
 
 RUN npm run build admin
 
-CMD ["node", "dist/main"]
+RUN npm prune --omit=dev
+RUN rm -rf apps config
+RUN rm -f package*.json tsconfig.build.json nest-cli.json
+
+CMD ["node", "dist/apps/admin/main"]
