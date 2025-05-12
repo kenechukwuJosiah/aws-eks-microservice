@@ -45,6 +45,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/database/tsconfig.lib.json"
       }
+    },
+    "authguard": {
+      "type": "library",
+      "root": "libs/authguard",
+      "entryFile": "index",
+      "sourceRoot": "libs/authguard/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/authguard/tsconfig.lib.json"
+      }
     }
   }
 }
