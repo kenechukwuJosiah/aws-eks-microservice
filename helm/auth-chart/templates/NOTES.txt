@@ -1,0 +1,44 @@
+###############################################################
+# Auth Chart Notes
+###############################################################
+
+1. **Service Information**:
+  - The authentication service is deployed as part of this Helm chart.
+  - Ensure the service is accessible and properly configured.
+
+2. **Accessing the Service**:
+  - Use the following command to get the service details:
+    ```
+    kubectl get svc -n <namespace>
+    ```
+  - Replace `<namespace>` with the namespace where the chart is deployed.
+
+3. **Environment Variables**:
+  - Verify that all required environment variables are set in the deployment configuration.
+
+4. **Logs and Debugging**:
+  - To view logs for the authentication service, use:
+    ```
+    kubectl logs -l app=auth -n <namespace>
+    ```
+  - Replace `<namespace>` with the appropriate namespace.
+
+5. **Scaling**:
+  - To scale the authentication service, use:
+    ```
+    kubectl scale deployment auth --replicas=<number> -n <namespace>
+    ```
+  - Replace `<number>` with the desired number of replicas.
+
+6. **Helm Commands**:
+  - To upgrade the chart:
+    ```
+    helm upgrade auth-chart ./auth-chart -n <namespace>
+    ```
+  - To uninstall the chart:
+    ```
+    helm uninstall auth-chart -n <namespace>
+    ```
+
+7. **Contact**:
+  - For further assistance, contact the DevOps team.
