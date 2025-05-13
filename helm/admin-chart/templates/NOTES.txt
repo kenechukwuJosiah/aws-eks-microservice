@@ -1,0 +1,42 @@
+################################################################################
+### Admin Chart Notes
+################################################################################
+
+1. **Accessing the Admin Service**:
+  - Once the admin chart is deployed, you can access the admin service using the following command:
+    ```
+    kubectl get svc -n <namespace>
+    ```
+  - Replace `<namespace>` with the namespace where the chart is deployed.
+
+2. **Admin Service URL**:
+  - If using a LoadBalancer service, note the external IP address:
+    ```
+    kubectl get svc <service-name> -n <namespace> -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+    ```
+  - Replace `<service-name>` with the name of the admin service.
+
+3. **Helm Release Information**:
+  - To check the status of the Helm release:
+    ```
+    helm status <release-name> -n <namespace>
+    ```
+  - Replace `<release-name>` with the name of your Helm release.
+
+4. **Logs and Debugging**:
+  - To view logs of the admin pod:
+    ```
+    kubectl logs <pod-name> -n <namespace>
+    ```
+  - Replace `<pod-name>` with the name of the admin pod.
+
+5. **Uninstalling the Chart**:
+  - To uninstall the admin chart:
+    ```
+    helm uninstall <release-name> -n <namespace>
+    ```
+  - Replace `<release-name>` with the name of your Helm release.
+
+6. **Customizing the Chart**:
+  - You can customize the admin chart by modifying the `values.yaml` file before deploying.
+
