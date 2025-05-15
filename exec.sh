@@ -16,6 +16,13 @@ case "$COMMAND" in
     ;;
 
   ingress)
+
+    ;;
+
+  argocd)
+    echo "$(dirname "$0")/scripts/argocd-setup.sh"
+    source "$(dirname "$0")/scripts/argocd-setup.sh"
+    setup_argo
     ;;
 
   *)
