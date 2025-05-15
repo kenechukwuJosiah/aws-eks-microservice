@@ -10,19 +10,6 @@ availabilityZones:
   - eu-west-1b
   - eu-west-1c
 
-vpc:
-  nat:
-    gateway: HighlyAvailable
-  subnets:
-    public:
-      eu-west-1a: {}
-      eu-west-1b: {}
-      eu-west-1c: {}
-    private:
-      eu-west-1a: {}
-      eu-west-1b: {}
-      eu-west-1c: {}
-
 managedNodeGroups:
   - name: ng-1
     instanceType: t3.medium
