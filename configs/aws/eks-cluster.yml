@@ -1,0 +1,44 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eks-demo
+  region: eu-west-1
+
+availabilityZones:
+  - eu-west-1a
+  - eu-west-1b
+  - eu-west-1c
+
+vpc:
+  nat:
+    gateway: HighlyAvailable
+  subnets:
+    public:
+      eu-west-1a: {}
+      eu-west-1b: {}
+      eu-west-1c: {}
+    private:
+      eu-west-1a: {}
+      eu-west-1b: {}
+      eu-west-1c: {}
+
+managedNodeGroups:
+  - name: ng-1
+    instanceType: t3.medium
+    desiredCapacity: 2
+    privateNetworking: true
+    minSize: 1
+    maxSize: 3
+    volumeSize: 70
+    ssh:
+      allow: true
+      publicKeyName: eks-keypair
+    tags:
+      nodegroup-role: worker
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+        cloudWatch: true
+        ebs: true
+        albIngress: true
