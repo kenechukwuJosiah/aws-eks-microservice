@@ -1,52 +1,76 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 setup_ingress_controller() {
-  # Setup IAM OIDC provider and associate it with your cluster
-  echo "Please Enter Cluster Name"
-  read -r CLUSTER_NAME
+  echo "🔧 Starting AWS ALB Ingress Controller Setup"
 
-  eksctl utils associate-iam-oidc-provider --region=eu-west-1 --cluster=$CLUSTER_NAME --approve
+  # Prompt for cluster name
+  read -rp "👉 Enter your EKS Cluster Name: " CLUSTER_NAME
+  REGION="eu-west-1"
+  POLICY_NAME="AWSLoadBalancerControllerIAMPolicy"
+  SERVICE_ACCOUNT_NAME="alb-ingress-controller"
+  NAMESPACE="kube-system"
+  POLICY_FILE="iam-policy.json"
 
-  # Setup IAM Role
-  echo "Fetching iam policy..."
-  curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
+  echo "Associating IAM OIDC provider with cluster..."
+  eksctl utils associate-iam-oidc-provider \
+    --region "$REGION" \
+    --cluster "$CLUSTER_NAME" \
+    --approve
 
-  aws iam create-policy \
-  --policy-name AWSLoadBalancerControllerIAMPolicy \
-  --policy-document file://iam-policy.json
+  # Fetch IAM policy JSON
+  if [[ ! -f $POLICY_FILE ]]; then
+    echo "⬇Downloading IAM policy..."
+    curl -s -o "$POLICY_FILE" https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
+  fi
 
+  # Check if policy exists
+  echo "Checking if IAM policy '$POLICY_NAME' exists..."
+  if ! aws iam get-policy --policy-arn "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):policy/$POLICY_NAME" >/dev/null 2>&1; then
+    echo "Creating IAM policy..."
+    aws iam create-policy \
+      --policy-name "$POLICY_NAME" \
+      --policy-document "file://$POLICY_FILE"
+  else
+    echo "IAM policy already exists. Skipping creation."
+  fi
 
-  # Get Policy ARN
-  echo "Setting up iam service account..."
-  echo "Please Enter Policy ARN"
-  read -r PolicyARN
+  # Create IAM Service Account
+  echo "Creating IAM Service Account..."
+  ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
   eksctl create iamserviceaccount \
-    --cluster=attractive-gopher \
-    --namespace=kube-system \
-    --name=alb-ingress-controller \
-    --attach-policy-arn=$PolicyARN \
+    --cluster "$CLUSTER_NAME" \
+    --namespace "$NAMESPACE" \
+    --name "$SERVICE_ACCOUNT_NAME" \
+    --attach-policy-arn "arn:aws:iam::$ACCOUNT_ID:policy/$POLICY_NAME" \
+    --region "$REGION" \
     --override-existing-serviceaccounts \
     --approve
 
-    # Setup Helm
-    echo "Setting up helm..."
-    helm repo add eks https://aws.github.io/eks-charts
-    helm repo update
+  # Set up Helm and repo
+  echo "Adding EKS Helm repo..."
+  helm repo add eks https://aws.github.io/eks-charts
+  helm repo update
 
-    # Get VPC ID and store in a variable
-    echo "Retrieving VPC ID..."
-    VPC_ID=$(aws eks describe-cluster --name $CLUSTER_NAME --region eu-west-1 \
-      --query "cluster.resourcesVpcConfig.vpcId" --output text)
+  # Get VPC ID
+  echo "Retrieving VPC ID for cluster..."
+  VPC_ID=$(aws eks describe-cluster \
+    --name "$CLUSTER_NAME" \
+    --region "$REGION" \
+    --query "cluster.resourcesVpcConfig.vpcId" \
+    --output text)
 
-    # Install/upgrade AWS Load Balancer Controller using Helm
-    helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
-      -n kube-system \
-      --set clusterName=$CLUSTER_NAME \
-      --set serviceAccount.create=false \
-      --set region=eu-west-1 \
-      --set vpcId=$VPC_ID \
-      --set serviceAccount.name=aws-load-balancer-controller
+  # Install the AWS Load Balancer Controller via Helm
+  echo "Installing AWS Load Balancer Controller with Helm..."
+  helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
+    -n "$NAMESPACE" \
+    --set clusterName="$CLUSTER_NAME" \
+    --set serviceAccount.create=false \
+    --set region="$REGION" \
+    --set vpcId="$VPC_ID" \
+    --set serviceAccount.name="$SERVICE_ACCOUNT_NAME"
 
-  kubectl get deployment -n kube-system aws-load-balancer-controller
-
+  echo "Load Balancer Controller deployment status:"
+  kubectl get deployment -n "$NAMESPACE" aws-load-balancer-controller
 }

@@ -36,6 +36,10 @@ setup_appcharts() {
         echo "Deleting $chart..."
         helm uninstall "$chart"
         ;;
+      *) 
+        echo "Invalid input; Accpeted values are (install/update/delete)"
+        exit 1
+        ;;
     esac
   done
 }
