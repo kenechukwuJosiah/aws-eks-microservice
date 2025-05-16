@@ -1,9 +1,8 @@
 #!/usr/local/bin/bash
 
 COMMAND=$1
-SUBCOMMAND=$2
 
-shift 2
+shift 1
 
 case "$COMMAND" in
   cluster)
@@ -16,17 +15,16 @@ case "$COMMAND" in
     ;;
 
   ingress)
-
+    source "$(dirname "$0")/scripts/ingress-setup.sh"
+    setup_ingress_controller "$@"
     ;;
 
   argocd)
-    echo "$(dirname "$0")/scripts/argocd-setup.sh"
     source "$(dirname "$0")/scripts/argocd-setup.sh"
     setup_argo
     ;;
 
   *)
-    echo "Commands: "$@""
     echo "Usage: $0 {cluster|chart|ingress} <subcommands> [options]"
     exit 1
     ;;
