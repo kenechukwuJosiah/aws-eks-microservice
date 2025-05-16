@@ -39,7 +39,7 @@ setup_ingress_controller() {
       --query "cluster.resourcesVpcConfig.vpcId" --output text)
 
     # Install/upgrade AWS Load Balancer Controller using Helm
-    helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller \
+    helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
       -n kube-system \
       --set clusterName=$CLUSTER_NAME \
       --set serviceAccount.create=false \
