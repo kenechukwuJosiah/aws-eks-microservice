@@ -11,7 +11,8 @@ case "$COMMAND" in
     ;;
 
   chart)
-
+    source "$(dirname "$0")/scripts/helm-charts-setup.sh"
+    setup_appcharts
     ;;
 
   ingress)
