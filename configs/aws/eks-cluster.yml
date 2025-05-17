@@ -2,7 +2,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: eks-demo
+  name: eks-test
   region: eu-west-1
 
 availabilityZones:

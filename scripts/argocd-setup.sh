@@ -1,5 +1,7 @@
 #!/usr/local/bin/bash
 
+echo "Setting up Argo CD..."
+
 setup_argo() {
 
   RED="\e[31m"

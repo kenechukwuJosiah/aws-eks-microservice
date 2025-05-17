@@ -8,9 +8,9 @@ manage_cluster() {
     exit 1
   fi
 
-  echo "Do you want to create or update the EKS cluster? (create/update/delete)"
+  echo "Do you want to create, delete or update the EKS cluster?"
 
-  read -r ACTION
+  read -rp "Please Enter Action (create/delete/update): " ACTION
 
   if [[ "$ACTION" == "create" ]]; then
     echo "Creating EKS cluster..."
