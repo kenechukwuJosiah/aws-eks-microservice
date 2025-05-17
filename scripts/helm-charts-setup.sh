@@ -1,17 +1,14 @@
 #!/usr/local/bin/bash
 
 setup_appcharts() {
-  echo "Please Enter Action to perform (install/update/delete)"
-  read action
+  read -rp "Please Enter Action to perform (install/update/delete): "  action
 
-  # Validate action
   if [[ "$action" != "install" && "$action" != "update" && "$action" != "delete" ]]; then
     echo "Invalid action: $action"
     echo "Usage: setup_appcharts [install|update|delete]"
     return 1
   fi
 
-  # Define charts
   declare -A charts
   charts=( 
     ["admin"]="./helm/admin-chart"
