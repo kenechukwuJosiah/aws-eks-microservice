@@ -25,8 +25,13 @@ case "$COMMAND" in
     setup_argo
     ;;
 
+  jenkins)
+    source "$(dirname "$0")/scripts/setup-jenkins.sh"
+    setup_jenkins
+    ;;
+
   *)
-    echo "Usage: $0 {cluster|chart|ingress} <subcommands> [options]"
+    echo "Usage: $0 {cluster|chart|ingress|argocd|jenkins} <subcommands> [options]"
     exit 1
     ;;
 
