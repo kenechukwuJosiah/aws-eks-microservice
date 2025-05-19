@@ -20,11 +20,15 @@ pipeline{
                 image: docker:24.0.5-cli
                 command:
                 - cat
-                - apk add --no-cache git
                 tty: true
                 volumeMounts:
                 - name: docker-socket
                   mountPath: /var/run
+              - name: git
+                image: alpine/git:latest
+                command:
+                - cat
+                tty: true
               volumes:
               - name: docker-socket
                 emptyDir: {}
@@ -44,8 +48,10 @@ pipeline{
       stage('Prepare Utils') {
         steps {
           container('docker-cli') {
-            script {
-              env.IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+            container('git') {
+              script {
+                env.IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+              }
             }
 
             withCredentials([string(credentialsId: 'reposity-base', variable: 'REGISTRY_BASE')]) {
