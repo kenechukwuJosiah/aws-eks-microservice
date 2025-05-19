@@ -47,20 +47,21 @@ pipeline{
 
       stage('Prepare Utils') {
         steps {
-          container('docker-cli') {
-            container('git') {
-              script {
-                env.IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-              }
-            }
-
-            withCredentials([string(credentialsId: 'reposity-base', variable: 'REGISTRY_BASE')]) {
+          container('git') {
+            sh 'git config --global --add safe.directory /home/jenkins/agent/workspace/eks_demo'
             script {
-              env.ADMIN_REPO = "${REGISTRY_BASE}/eks-admin-demo"
-              env.USER_REPO = "${REGISTRY_BASE}/eks-user-demo"
-              env.AUTH_REPO = "${REGISTRY_BASE}/eks-auth-demo"
+              env.IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
             }
           }
+
+          container('docker-cli') {
+            withCredentials([string(credentialsId: 'reposity-base', variable: 'REGISTRY_BASE')]) {
+              script {
+                env.ADMIN_REPO = "${REGISTRY_BASE}/eks-admin-demo"
+                env.USER_REPO = "${REGISTRY_BASE}/eks-user-demo"
+                env.AUTH_REPO = "${REGISTRY_BASE}/eks-auth-demo"
+              }
+            }
           }
         }
       }
