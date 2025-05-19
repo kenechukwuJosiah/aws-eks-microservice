@@ -64,15 +64,20 @@ pipeline{
             }
           }
 
-          withCredentials([file(credentialsId: 'my-env-file', variable: 'ENV_FILE')]) {
-              sh '''
-                echo "Loading env file"
-                cp $ENV_FILE .env
-                cat .env
-              '''
-            }
-          }
+        }
       }
+
+      stage('Load .env from Jenkins Credentials') {
+      steps {
+        withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
+          sh '''
+            echo "Loading env file"
+            cp $ENV_FILE .env
+            cat .env
+          '''
+        }
+      }
+    }
 
 
       stage('Build Images') {
