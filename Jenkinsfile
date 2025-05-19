@@ -20,6 +20,7 @@ pipeline{
                 image: docker:24.0.5-cli
                 command:
                 - cat
+                - apk add --no-cache git
                 tty: true
                 volumeMounts:
                 - name: docker-socket
