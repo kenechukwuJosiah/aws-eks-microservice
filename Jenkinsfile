@@ -24,6 +24,8 @@ pipeline{
                 volumeMounts:
                 - name: docker-socket
                   mountPath: /var/run
+                - name: docker-sock
+                  mountPath: /var/run/docker.sock
               - name: git
                 image: alpine/git:latest
                 command:
@@ -34,6 +36,9 @@ pipeline{
                 emptyDir: {}
               - name: docker-graph-storage
                 emptyDir: {}
+              - name: docker-sock
+                hostPath:
+                  path: /var/run/docker.sock
           '''
         }
     }
