@@ -32,9 +32,6 @@ pipeline{
           '''
         }
     }
-    environment {
-      
-    }
 
     stages{
       stage('Checkout') {
