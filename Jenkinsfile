@@ -63,7 +63,15 @@ pipeline{
               }
             }
           }
-        }
+
+          withCredentials([file(credentialsId: 'my-env-file', variable: 'ENV_FILE')]) {
+              sh '''
+                echo "Loading env file"
+                cp $ENV_FILE .env
+                cat .env
+              '''
+            }
+          }
       }
 
 
@@ -72,14 +80,15 @@ pipeline{
           stage('Build Auth Service') {
             steps {
               container('docker-cli') {
-                sh 'docker compose build auth'
+                sh 'docker compose --env-file .env build auth'
               }
             }
           }
+
           stage('Build User Service') {
             steps {
               container('docker-cli') {
-                sh 'docker compose build user'
+                sh 'docker compose --env-file .env build user'
               }
             }
           }
@@ -87,7 +96,7 @@ pipeline{
           stage('Build Admin Service') {
             steps {
               container('docker-cli') {
-                sh 'docker compose build admin'
+                sh 'docker compose --env-file .env build admin'
               }
             }
           }
