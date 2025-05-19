@@ -29,3 +29,12 @@ managedNodeGroups:
         cloudWatch: true
         ebs: true
         albIngress: true
+
+addons:
+  - name: vpc-cni
+    version: latest
+    attachPolicyARNs: []
+  - name: kube-proxy
+    version: latest
+  - name: coredns
+    version: latest
