@@ -12,7 +12,7 @@ pipeline {
             command:
             - sleep
             args:
-            - 9999999
+            - "9999999"
             volumeMounts:
               - name: jenkins-docker-cfg
                 mountPath: /kaniko/.docker
@@ -31,9 +31,10 @@ pipeline {
 
   environment {
     IMAGE_TAG = ""
-    AUTH_REPO = ""
-    ADMIN_REPO = ""
-    USER_REPO = ""
+    REGISTRY_BASE = "docker.io/kenechukwujosiah"
+    AUTH_REPO = "docker.io/kenechukwujosiah/eks-auth-demo"
+    ADMIN_REPO = "docker.io/kenechukwujosiah/eks-admin-demo"
+    USER_REPO = "docker.io/kenechukwujosiah/eks-user-demo"
   }
 
   stages {
@@ -47,14 +48,6 @@ pipeline {
       steps {
         script {
           IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-        }
-
-        withCredentials([string(credentialsId: 'reposity-base', variable: 'REGISTRY_BASE')]) {
-          script {
-            AUTH_REPO = "${REGISTRY_BASE}/eks-auth-demo"
-            ADMIN_REPO = "${REGISTRY_BASE}/eks-admin-demo"
-            USER_REPO = "${REGISTRY_BASE}/eks-user-demo"
-          }
         }
 
         withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
@@ -78,7 +71,7 @@ pipeline {
                   --dockerfile=${WORKSPACE}/apps/auth/Dockerfile \
                   --destination=${AUTH_REPO}:${IMAGE_TAG} \
                   --destination=${AUTH_REPO}:latest \
-                  --build-arg-file .env \
+                  --build-arg-file=.env \
                   --verbosity=info
               """
             }
@@ -94,7 +87,7 @@ pipeline {
                   --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
                   --destination=${ADMIN_REPO}:${IMAGE_TAG} \
                   --destination=${ADMIN_REPO}:latest \
-                  --build-arg-file .env \
+                  --build-arg-file=.env \
                   --verbosity=info
               """
             }
@@ -110,7 +103,7 @@ pipeline {
                   --dockerfile=${WORKSPACE}/apps/user/Dockerfile \
                   --destination=${USER_REPO}:${IMAGE_TAG} \
                   --destination=${USER_REPO}:latest \
-                  --build-arg-file .env \
+                  --build-arg-file=.env \
                   --verbosity=info
               """
             }
