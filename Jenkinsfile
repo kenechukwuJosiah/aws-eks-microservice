@@ -3,24 +3,25 @@ pipeline {
     kubernetes {
       defaultContainer 'kaniko'
       yaml """
+        apiVersion: v1
         kind: Pod
         spec:
           containers:
-          - name: kaniko
-            image: gcr.io/kaniko-project/executor:latest
-            imagePullPolicy: Always
-            command:
-            - /busybox/sh
-            args:
-            - -c
-            - cat
-            volumeMounts:
-              - name: jenkins-docker-cfg
-                mountPath: /kaniko/.docker
+            - name: kaniko
+              image: gcr.io/kaniko-project/executor:latest
+              imagePullPolicy: Always
+              command:
+                - /kaniko/executor
+              args:
+                - --help
+              volumeMounts:
+                - name: jenkins-docker-cfg
+                  mountPath: /kaniko/.docker
+          restartPolicy: Never
           volumes:
-          - name: jenkins-docker-cfg
-            secret:
-              secretName: regcred
+            - name: jenkins-docker-cfg
+              secret:
+                secretName: regcred
       """
     }
   }
