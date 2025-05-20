@@ -9,7 +9,8 @@ pipeline{
               containers:
               - name: docker
                 image: docker:24.0.5-cli
-                command: ['cat']
+                command:
+                - cat
                 tty: true
                 securityContext:
                   privileged: true
@@ -18,13 +19,15 @@ pipeline{
                   mountPath: /var/run/docker.sock
               - name: git
                 image: alpine/git:latest
-                command: ['cat']
+                command:
+                - cat
                 tty: true
               volumes:
+              - name: docker-socket
+                emptyDir: {}
               - name: docker-sock
                 hostPath:
                   path: /var/run/docker.sock
-                  type: Socket
           '''
         }
     }
@@ -45,7 +48,7 @@ pipeline{
             }
           }
 
-          container('docker-cli') {
+          container('docker') {
             withCredentials([string(credentialsId: 'reposity-base', variable: 'REGISTRY_BASE')]) {
               script {
                 env.ADMIN_REPO = "${REGISTRY_BASE}/eks-admin-demo"
@@ -75,7 +78,7 @@ pipeline{
         parallel {
           stage('Build Auth Service') {
             steps {
-              container('docker-cli') {
+              container('docker') {
                 sh 'docker compose --env-file .env build auth'
               }
             }
@@ -83,7 +86,7 @@ pipeline{
 
           stage('Build User Service') {
             steps {
-              container('docker-cli') {
+              container('docker') {
                 sh 'docker compose --env-file .env build user'
               }
             }
@@ -91,7 +94,7 @@ pipeline{
 
           stage('Build Admin Service') {
             steps {
-              container('docker-cli') {
+              container('docker') {
                 sh 'docker compose --env-file .env build admin'
               }
             }
@@ -103,7 +106,7 @@ pipeline{
         parallel{
           stage('Tag Auth'){
             steps{
-              container('docker-cli') {
+              container('docker') {
                 sh "docker tag auth ${AUTH_REPO}:${IMAGE_TAG}"
               }
             }
@@ -111,7 +114,7 @@ pipeline{
 
           stage('Tag Admin'){
             steps{
-              container('docker-cli') {
+              container('docker') {
                 sh "docker tag auth ${ADMIN_REPO}:${IMAGE_TAG}"
               }
             }
@@ -119,7 +122,7 @@ pipeline{
 
           stage('Tag User'){
             steps{
-              container('docker-cli') {
+              container('docker') {
                 sh "docker tag auth ${USER_REPO}:${IMAGE_TAG}"
               }
             }
@@ -130,7 +133,7 @@ pipeline{
 
       stage ('Authenticate Docker') {
         steps{
-          container('docker-cli') {
+          container('docker') {
             withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
             sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
           }
@@ -143,7 +146,7 @@ pipeline{
         parallel{
           stage("Push Auth") {
             steps{
-              container('docker-cli') {
+              container('docker') {
                 sh 'docker push ${AUTH_REPO}:${IMAGE_TAG}'
               }
             }
@@ -151,7 +154,7 @@ pipeline{
 
           stage("Push Admin") {
             steps{
-              container('docker-cli') {
+              container('docker') {
                 sh 'docker push ${ADMIN_REPO}:${IMAGE_TAG}'
               }
             }
@@ -159,7 +162,7 @@ pipeline{
 
           stage("Push User") {
             steps{
-              container('docker-cli') {
+              container('docker') {
                 sh 'docker push ${USER_REPO}:${IMAGE_TAG}'
               }
             }
