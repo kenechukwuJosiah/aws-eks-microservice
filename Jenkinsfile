@@ -10,16 +10,18 @@ pipeline {
             image: gcr.io/kaniko-project/executor:latest
             imagePullPolicy: Always
             command:
-            - sleep
+            - /busybox/sh
             args:
-            - 9999999
+            - -c
+            - cat
             volumeMounts:
               - name: jenkins-docker-cfg
                 mountPath: /kaniko/.docker
           volumes:
           - name: jenkins-docker-cfg
-            secretname: regcred
-        """
+            secret:
+              secretName: regcred
+      """
     }
   }
 
