@@ -77,7 +77,7 @@ pipeline {
                   --context=${WORKSPACE} \
                   --dockerfile=${WORKSPACE}/apps/auth/Dockerfile \
                   --destination=${AUTH_REPO}:${IMAGE_TAG} \
-                  --destination=${AUTH_REPO}:$latest \
+                  --destination=${AUTH_REPO}:latest \
                   --build-arg-file .env \
                   --verbosity=info
               """
@@ -93,7 +93,7 @@ pipeline {
                   --context=${WORKSPACE} \
                   --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
                   --destination=${ADMIN_REPO}:${IMAGE_TAG} \
-                  --destination=${ADMIN_REPO}:$latest \
+                  --destination=${ADMIN_REPO}:latest \
                   --build-arg-file .env \
                   --verbosity=info
               """
@@ -109,7 +109,7 @@ pipeline {
                   --context=${WORKSPACE} \
                   --dockerfile=${WORKSPACE}/apps/user/Dockerfile \
                   --destination=${USER_REPO}:${IMAGE_TAG} \
-                  --destination=${USER_REPO}:$latest \
+                  --destination=${USER_REPO}:latest \
                   --build-arg-file .env \
                   --verbosity=info
               """
