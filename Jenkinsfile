@@ -10,8 +10,6 @@ pipeline {
             - name: kaniko
               image: gcr.io/kaniko-project/executor:latest
               imagePullPolicy: Always
-              command:
-                - cat
               tty: true
               volumeMounts:
                 - name: docker-config
