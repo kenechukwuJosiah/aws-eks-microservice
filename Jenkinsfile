@@ -24,8 +24,6 @@ pipeline{
                 securityContext:
                   privileged: true
                 volumeMounts:
-                - name: docker-socket
-                  mountPath: /var/run
                 - name: docker-sock
                   mountPath: /var/run/docker.sock
               - name: git
