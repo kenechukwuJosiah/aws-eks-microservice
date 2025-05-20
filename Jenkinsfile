@@ -1,27 +1,30 @@
 pipeline {
   agent {
     kubernetes {
-      defaultContainer 'kaniko'
       yaml """
         apiVersion: v1
         kind: Pod
         spec:
           containers:
-            - name: kaniko
-              image: gcr.io/kaniko-project/executor:latest
-              imagePullPolicy: Always
-              tty: true
-              volumeMounts:
-                - name: docker-config
-                  mountPath: /kaniko/.docker
-
+          - name: kaniko
+            image: gcr.io/kaniko-project/executor:debug
+            imagePullPolicy: Always
+            command:
+            - sleep
+            args:
+            - 9999999
+            volumeMounts:
+              - name: jenkins-docker-cfg
+                mountPath: /kaniko/.docker
           volumes:
-            - name: docker-config
-              secret:
-                secretName: regcred
-                items:
-                  - key: .dockerconfigjson
-                    path: config.json
+          - name: jenkins-docker-cfg
+            projected:
+              sources:
+              - secret:
+                  name: regcred
+                  items:
+                    - key: .dockerconfigjson
+                      path: config.json
       """
     }
   }
