@@ -7,7 +7,7 @@ pipeline {
         spec:
           containers:
           - name: kaniko
-            image: gcr.io/kaniko-project/executor:debug
+            image: gcr.io/kaniko-project/executor:latest
             imagePullPolicy: Always
             command:
             - sleep
@@ -77,6 +77,7 @@ pipeline {
                   --context=${WORKSPACE} \
                   --dockerfile=${WORKSPACE}/apps/auth/Dockerfile \
                   --destination=${AUTH_REPO}:${IMAGE_TAG} \
+                  --destination=${AUTH_REPO}:$latest \
                   --build-arg-file .env \
                   --verbosity=info
               """
@@ -92,6 +93,7 @@ pipeline {
                   --context=${WORKSPACE} \
                   --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
                   --destination=${ADMIN_REPO}:${IMAGE_TAG} \
+                  --destination=${ADMIN_REPO}:$latest \
                   --build-arg-file .env \
                   --verbosity=info
               """
@@ -107,6 +109,7 @@ pipeline {
                   --context=${WORKSPACE} \
                   --dockerfile=${WORKSPACE}/apps/user/Dockerfile \
                   --destination=${USER_REPO}:${IMAGE_TAG} \
+                  --destination=${USER_REPO}:$latest \
                   --build-arg-file .env \
                   --verbosity=info
               """
