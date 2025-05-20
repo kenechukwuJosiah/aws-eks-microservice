@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      defaultContainer 'busybox'
+      defaultContainer 'kaniko'
       yaml """
         apiVersion: v1
         kind: Pod
@@ -10,20 +10,20 @@ pipeline {
             - name: kaniko
               image: gcr.io/kaniko-project/executor:latest
               imagePullPolicy: Always
-              volumeMounts:
-                - name: jenkins-docker-cfg
-                  mountPath: /kaniko/.docker
-
-            - name: busybox
-              image: busybox
               command:
                 - cat
               tty: true
+              volumeMounts:
+                - name: docker-config
+                  mountPath: /kaniko/.docker
 
           volumes:
-            - name: jenkins-docker-cfg
+            - name: docker-config
               secret:
                 secretName: regcred
+                items:
+                  - key: .dockerconfigjson
+                    path: config.json
       """
     }
   }
