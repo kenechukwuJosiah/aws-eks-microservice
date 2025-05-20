@@ -3,23 +3,22 @@ pipeline {
     kubernetes {
       defaultContainer 'kaniko'
       yaml """
-          apiVersion: v1
-          kind: Pod
-          spec:
-            containers:
-              - name: kaniko
-                image: gcr.io/kaniko-project/executor:latest
-                volumeMounts:
-                  - name: kaniko-secret
-                    mountPath: /kaniko/.docker
-            volumes:
-              - name: kaniko-secret
-                secret:
-                  secretName: regcred
-          """
+        apiVersion: v1
+        kind: Pod
+        spec:
+          containers:
+            - name: kaniko
+              image: gcr.io/kaniko-project/executor:latest
+              volumeMounts:
+                - name: kaniko-secret
+                  mountPath: /kaniko/.docker
+          volumes:
+            - name: kaniko-secret
+              secret:
+                secretName: regcred
+        """
     }
   }
-
 
   environment {
     IMAGE_TAG = ""
@@ -66,11 +65,11 @@ pipeline {
             container('kaniko') {
               sh """
                 /kaniko/executor \
-                  --context `pwd` \
-                  --dockerfile `pwd`/apps/auth/Dockerfile \
-                  --destination ${AUTH_REPO}:${IMAGE_TAG} \
+                  --context=${WORKSPACE} \
+                  --dockerfile=${WORKSPACE}/apps/auth/Dockerfile \
+                  --destination=${AUTH_REPO}:${IMAGE_TAG} \
                   --build-arg-file .env \
-                  --verbosity info
+                  --verbosity=info
               """
             }
           }
@@ -81,11 +80,11 @@ pipeline {
             container('kaniko') {
               sh """
                 /kaniko/executor \
-                  --context `pwd` \
-                  --dockerfile `pwd`/apps/admin/Dockerfile \
-                  --destination ${ADMIN_REPO}:${IMAGE_TAG} \
+                  --context=${WORKSPACE} \
+                  --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
+                  --destination=${ADMIN_REPO}:${IMAGE_TAG} \
                   --build-arg-file .env \
-                  --verbosity info
+                  --verbosity=info
               """
             }
           }
@@ -96,11 +95,11 @@ pipeline {
             container('kaniko') {
               sh """
                 /kaniko/executor \
-                  --context `pwd` \
-                  --dockerfile `pwd`/apps/user/Dockerfile \
-                  --destination ${USER_REPO}:${IMAGE_TAG} \
+                  --context=${WORKSPACE} \
+                  --dockerfile=${WORKSPACE}/apps/user/Dockerfile \
+                  --destination=${USER_REPO}:${IMAGE_TAG} \
                   --build-arg-file .env \
-                  --verbosity info
+                  --verbosity=info
               """
             }
           }
