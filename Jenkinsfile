@@ -1,31 +1,35 @@
 pipeline {
-  agent {
+    agent {
     kubernetes {
       defaultContainer 'docker'
       yaml '''
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: docker
-    image: docker:24.0.5-cli
-    command: ["cat"]
-    tty: true
-    securityContext:
-      privileged: true
-    volumeMounts:
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
-  - name: git
-    image: alpine/git:latest
-    command: ["cat"]
-    tty: true
-  volumes:
-  - name: docker-sock
-    hostPath:
-      path: /var/run/docker.sock
-      type: Socket
-'''
+        apiVersion: v1
+        kind: Pod
+        spec:
+          containers:
+            - name: docker
+              image: docker:24.0.5-dind
+              command:
+                - dockerd-entrypoint.sh
+              args:
+                - --host=tcp://127.0.0.1:2375
+                - --host=unix:///var/run/docker.sock
+              securityContext:
+                privileged: true
+              env:
+                - name: DOCKER_TLS_CERTDIR
+                  value: ""
+              volumeMounts:
+                - name: docker-graph-storage
+                  mountPath: /var/lib/docker
+            - name: git
+              image: alpine/git:latest
+              command: ["cat"]
+              tty: true
+          volumes:
+            - name: docker-graph-storage
+              emptyDir: {}
+        '''
     }
   }
 
