@@ -62,46 +62,68 @@ pipeline {
 
     stage('Build and Push Images') {
       parallel {
-        stage('Auth') {
-          steps {
-            container('kaniko') {
-              sh '''
-                BUILD_ARGS=""
-                while IFS='=' read -r key value; do
-                  [[ -z "$key" || "$key" == \#* ]] && continue
-                  BUILD_ARGS="$BUILD_ARGS --build-arg=$key=$value"
-                done < .env
 
-                /kaniko/executor \
-                  --context=${WORKSPACE} \
-                  --dockerfile=${WORKSPACE}/apps/auth/Dockerfile \
-                  --destination=${AUTH_REPO}:${IMAGE_TAG} \
-                  --destination=${AUTH_REPO}:latest \
-                  $BUILD_ARGS \
-                  --verbosity=info
-              '''
-            }
+
+        stage('Auth') {
+      steps {
+        container('kaniko') {
+          withCredentials([
+            string(credentialsId: 'auth-port', variable: 'AUTH_PORT'),
+            string(credentialsId: 'mongodb-host', variable: 'MONGODB_HOST'),
+            string(credentialsId: 'mongodb-port', variable: 'MONGODB_PORT'),
+            string(credentialsId: 'mongodb-username', variable: 'MONGODB_USERNAME'),
+            string(credentialsId: 'mongodb-password', variable: 'MONGODB_PASSWORD'),
+            string(credentialsId: 'mongodb-database', variable: 'MONGODB_DATABASE'),
+            string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
+          ]) {
+            sh """
+              /kaniko/executor \
+                --context=${WORKSPACE} \
+                --dockerfile=${WORKSPACE}/apps/auth/Dockerfile \
+                --destination=${AUTH_REPO}:${IMAGE_TAG} \
+                --destination=${AUTH_REPO}:latest \
+                --build-arg=AUTH_PORT=$AUTH_PORT \
+                --build-arg=MONGODB_HOST=$MONGODB_HOST \
+                --build-arg=MONGODB_PORT=$MONGODB_PORT \
+                --build-arg=MONGODB_USERNAME=$MONGODB_USERNAME \
+                --build-arg=MONGODB_PASSWORD=$MONGODB_PASSWORD \
+                --build-arg=MONGODB_DATABASE=$MONGODB_DATABASE \
+                --build-arg=JWT_SECRET=$JWT_SECRET \
+                --verbosity=info
+            """
           }
         }
+      }
+    }
 
         stage('Admin') {
           steps {
             container('kaniko') {
-              sh '''
-                BUILD_ARGS=""
-                while IFS='=' read -r key value; do
-                  [[ -z "$key" || "$key" == \#* ]] && continue
-                  BUILD_ARGS="$BUILD_ARGS --build-arg=$key=$value"
-                done < .env
-
-                /kaniko/executor \
-                  --context=${WORKSPACE} \
-                  --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
-                  --destination=${ADMIN_REPO}:${IMAGE_TAG} \
-                  --destination=${ADMIN_REPO}:latest \
-                  $BUILD_ARGS \
-                  --verbosity=info
-              '''
+              withCredentials([
+                string(credentialsId: 'admin-port', variable: 'ADMIN_PORT'),
+                string(credentialsId: 'mongodb-host', variable: 'MONGODB_HOST'),
+                string(credentialsId: 'mongodb-port', variable: 'MONGODB_PORT'),
+                string(credentialsId: 'mongodb-username', variable: 'MONGODB_USERNAME'),
+                string(credentialsId: 'mongodb-password', variable: 'MONGODB_PASSWORD'),
+                string(credentialsId: 'mongodb-database', variable: 'MONGODB_DATABASE'),
+                string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
+              ]) {
+                sh """
+                  /kaniko/executor \
+                    --context=${WORKSPACE} \
+                    --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
+                    --destination=${ADMIN_REPO}:${IMAGE_TAG} \
+                    --destination=${ADMIN_REPO}:latest \
+                    --build-arg=ADMIN_PORT=$ADMIN_PORT \
+                    --build-arg=MONGODB_HOST=$MONGODB_HOST \
+                    --build-arg=MONGODB_PORT=$MONGODB_PORT \
+                    --build-arg=MONGODB_USERNAME=$MONGODB_USERNAME \
+                    --build-arg=MONGODB_PASSWORD=$MONGODB_PASSWORD \
+                    --build-arg=MONGODB_DATABASE=$MONGODB_DATABASE \
+                    --build-arg=JWT_SECRET=$JWT_SECRET \
+                    --verbosity=info
+                """
+              }
             }
           }
         }
@@ -109,21 +131,33 @@ pipeline {
         stage('User') {
           steps {
             container('kaniko') {
-              sh '''
-                BUILD_ARGS=""
-                while IFS='=' read -r key value; do
-                  [[ -z "$key" || "$key" == \#* ]] && continue
-                  BUILD_ARGS="$BUILD_ARGS --build-arg=$key=$value"
-                done < .env
-
-                /kaniko/executor \
-                  --context=${WORKSPACE} \
-                  --dockerfile=${WORKSPACE}/apps/user/Dockerfile \
-                  --destination=${USER_REPO}:${IMAGE_TAG} \
-                  --destination=${USER_REPO}:latest \
-                  $BUILD_ARGS \
-                  --verbosity=info
-              '''
+              container('kaniko') {
+              withCredentials([
+                string(credentialsId: 'admin-port', variable: 'USER_PORT'),
+                string(credentialsId: 'mongodb-host', variable: 'MONGODB_HOST'),
+                string(credentialsId: 'mongodb-port', variable: 'MONGODB_PORT'),
+                string(credentialsId: 'mongodb-username', variable: 'MONGODB_USERNAME'),
+                string(credentialsId: 'mongodb-password', variable: 'MONGODB_PASSWORD'),
+                string(credentialsId: 'mongodb-database', variable: 'MONGODB_DATABASE'),
+                string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
+              ]) {
+                sh """
+                  /kaniko/executor \
+                    --context=${WORKSPACE} \
+                    --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
+                    --destination=${USER_REPO}:${IMAGE_TAG} \
+                    --destination=${USER_REPO}:latest \
+                    --build-arg=USER_PORT=$USER_PORT \
+                    --build-arg=MONGODB_HOST=$MONGODB_HOST \
+                    --build-arg=MONGODB_PORT=$MONGODB_PORT \
+                    --build-arg=MONGODB_USERNAME=$MONGODB_USERNAME \
+                    --build-arg=MONGODB_PASSWORD=$MONGODB_PASSWORD \
+                    --build-arg=MONGODB_DATABASE=$MONGODB_DATABASE \
+                    --build-arg=JWT_SECRET=$JWT_SECRET \
+                    --verbosity=info
+                """
+              }
+            }
             }
           }
         }
