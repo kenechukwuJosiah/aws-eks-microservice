@@ -78,12 +78,13 @@ pipeline {
                   --dockerfile=${WORKSPACE}/apps/auth/Dockerfile \
                   --destination=${AUTH_REPO}:${IMAGE_TAG} \
                   --destination=${AUTH_REPO}:latest \
-                  --build-arg-file .env \
+                  --build-arg-file=.env \
                   --verbosity=info
               """
             }
           }
         }
+
 
         stage('Admin') {
           steps {
