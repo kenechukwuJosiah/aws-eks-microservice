@@ -9,9 +9,6 @@ pipeline {
             containers:
               - name: kaniko
                 image: gcr.io/kaniko-project/executor:latest
-                command:
-                  - cat
-                tty: true
                 volumeMounts:
                   - name: kaniko-secret
                     mountPath: /kaniko/.docker
@@ -22,6 +19,7 @@ pipeline {
           """
     }
   }
+
 
   environment {
     IMAGE_TAG = ""
