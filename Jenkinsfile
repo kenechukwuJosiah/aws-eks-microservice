@@ -3,19 +3,22 @@ pipeline {
     kubernetes {
       defaultContainer 'kaniko'
       yaml """
-        apiVersion: v1
         kind: Pod
         spec:
           containers:
-            - name: kaniko
-              image: gcr.io/kaniko-project/executor:latest
-              volumeMounts:
-                - name: kaniko-secret
-                  mountPath: /kaniko/.docker
+          - name: kaniko
+            image: gcr.io/kaniko-project/executor:latest
+            imagePullPolicy: Always
+            command:
+            - sleep
+            args:
+            - 9999999
+            volumeMounts:
+              - name: jenkins-docker-cfg
+                mountPath: /kaniko/.docker
           volumes:
-            - name: kaniko-secret
-              secret:
-                secretName: regcred
+          - name: jenkins-docker-cfg
+            secretname: regcred
         """
     }
   }
