@@ -65,15 +65,21 @@ pipeline {
         stage('Auth') {
           steps {
             container('kaniko') {
-              sh """
+              sh '''
+                BUILD_ARGS=""
+                while IFS='=' read -r key value; do
+                  [[ -z "$key" || "$key" == \#* ]] && continue
+                  BUILD_ARGS="$BUILD_ARGS --build-arg=$key=$value"
+                done < .env
+
                 /kaniko/executor \
                   --context=${WORKSPACE} \
                   --dockerfile=${WORKSPACE}/apps/auth/Dockerfile \
                   --destination=${AUTH_REPO}:${IMAGE_TAG} \
                   --destination=${AUTH_REPO}:latest \
-                  --build-arg-file=.env \
+                  $BUILD_ARGS \
                   --verbosity=info
-              """
+              '''
             }
           }
         }
@@ -81,15 +87,21 @@ pipeline {
         stage('Admin') {
           steps {
             container('kaniko') {
-              sh """
+              sh '''
+                BUILD_ARGS=""
+                while IFS='=' read -r key value; do
+                  [[ -z "$key" || "$key" == \#* ]] && continue
+                  BUILD_ARGS="$BUILD_ARGS --build-arg=$key=$value"
+                done < .env
+
                 /kaniko/executor \
                   --context=${WORKSPACE} \
                   --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
                   --destination=${ADMIN_REPO}:${IMAGE_TAG} \
                   --destination=${ADMIN_REPO}:latest \
-                  --build-arg-file=.env \
+                  $BUILD_ARGS \
                   --verbosity=info
-              """
+              '''
             }
           }
         }
@@ -97,15 +109,21 @@ pipeline {
         stage('User') {
           steps {
             container('kaniko') {
-              sh """
+              sh '''
+                BUILD_ARGS=""
+                while IFS='=' read -r key value; do
+                  [[ -z "$key" || "$key" == \#* ]] && continue
+                  BUILD_ARGS="$BUILD_ARGS --build-arg=$key=$value"
+                done < .env
+
                 /kaniko/executor \
                   --context=${WORKSPACE} \
                   --dockerfile=${WORKSPACE}/apps/user/Dockerfile \
                   --destination=${USER_REPO}:${IMAGE_TAG} \
                   --destination=${USER_REPO}:latest \
-                  --build-arg-file=.env \
+                  $BUILD_ARGS \
                   --verbosity=info
-              """
+              '''
             }
           }
         }
