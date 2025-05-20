@@ -8,18 +8,8 @@ pipeline{
             spec:
               containers:
               - name: docker
-                image: docker:latest
-                command: ['cat']
-                tty: true
-                securityContext:
-                  privileged: true
-                volumeMounts:
-                - name: docker-graph-storage
-                  mountPath: /var/lib/docker
-              - name: docker-cli
                 image: docker:24.0.5-cli
-                command:
-                - cat
+                command: ['cat']
                 tty: true
                 securityContext:
                   privileged: true
@@ -28,17 +18,13 @@ pipeline{
                   mountPath: /var/run/docker.sock
               - name: git
                 image: alpine/git:latest
-                command:
-                - cat
+                command: ['cat']
                 tty: true
               volumes:
-              - name: docker-socket
-                emptyDir: {}
-              - name: docker-graph-storage
-                emptyDir: {}
               - name: docker-sock
                 hostPath:
                   path: /var/run/docker.sock
+                  type: Socket
           '''
         }
     }
