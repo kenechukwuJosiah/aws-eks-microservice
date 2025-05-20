@@ -1,46 +1,33 @@
 pipeline {
-    agent {
+  agent {
     kubernetes {
-      defaultContainer 'docker'
-      yaml '''
-        apiVersion: v1
-        kind: Pod
-        spec:
-          containers:
-            - name: docker
-              image: docker:24.0.5-dind
-              command:
-                - sh
-                - -c
-                - |
-                  dockerd-entrypoint.sh &
-                  sleep 5
-                  cat
-              tty: true
-              securityContext:
-                privileged: true
-              env:
-                - name: DOCKER_TLS_CERTDIR
-                  value: ""
-              volumeMounts:
-                - name: docker-graph-storage
-                  mountPath: /var/lib/docker
-            - name: git
-              image: alpine/git:latest
-              command: ["cat"]
-              tty: true
-          volumes:
-            - name: docker-graph-storage
-              emptyDir: {}
-        '''
+      defaultContainer 'kaniko'
+      yaml """
+          apiVersion: v1
+          kind: Pod
+          spec:
+            containers:
+              - name: kaniko
+                image: gcr.io/kaniko-project/executor:latest
+                command:
+                  - cat
+                tty: true
+                volumeMounts:
+                  - name: kaniko-secret
+                    mountPath: /kaniko/.docker
+            volumes:
+              - name: kaniko-secret
+                secret:
+                  secretName: regcred
+          """
     }
   }
 
   environment {
     IMAGE_TAG = ""
+    AUTH_REPO = ""
     ADMIN_REPO = ""
     USER_REPO = ""
-    AUTH_REPO = ""
   }
 
   stages {
@@ -50,29 +37,20 @@ pipeline {
       }
     }
 
-    stage('Prepare Utils') {
+    stage('Setup') {
       steps {
-        container('git') {
-          sh 'git config --global --add safe.directory ${WORKSPACE}'
+        script {
+          IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+        }
+
+        withCredentials([string(credentialsId: 'reposity-base', variable: 'REGISTRY_BASE')]) {
           script {
-            IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+            AUTH_REPO = "${REGISTRY_BASE}/eks-auth-demo"
+            ADMIN_REPO = "${REGISTRY_BASE}/eks-admin-demo"
+            USER_REPO = "${REGISTRY_BASE}/eks-user-demo"
           }
         }
 
-        container('docker') {
-          withCredentials([string(credentialsId: 'reposity-base', variable: 'REGISTRY_BASE')]) {
-            script {
-              ADMIN_REPO = "${REGISTRY_BASE}/eks-admin-demo"
-              USER_REPO = "${REGISTRY_BASE}/eks-user-demo"
-              AUTH_REPO = "${REGISTRY_BASE}/eks-auth-demo"
-            }
-          }
-        }
-      }
-    }
-
-    stage('Load .env from Jenkins Credentials') {
-      steps {
         withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
           sh '''
             echo "Loading env file"
@@ -83,94 +61,49 @@ pipeline {
       }
     }
 
-    stage('Build Images') {
+    stage('Build and Push Images') {
       parallel {
-        stage('Build Auth Service') {
+        stage('Auth') {
           steps {
-            container('docker') {
-              sh 'docker compose --env-file .env build auth'
+            container('kaniko') {
+              sh """
+                /kaniko/executor \
+                  --context `pwd` \
+                  --dockerfile `pwd`/apps/auth/Dockerfile \
+                  --destination ${AUTH_REPO}:${IMAGE_TAG} \
+                  --build-arg-file .env \
+                  --verbosity info
+              """
             }
           }
         }
 
-        stage('Build User Service') {
+        stage('Admin') {
           steps {
-            container('docker') {
-              sh 'docker compose --env-file .env build user'
+            container('kaniko') {
+              sh """
+                /kaniko/executor \
+                  --context `pwd` \
+                  --dockerfile `pwd`/apps/admin/Dockerfile \
+                  --destination ${ADMIN_REPO}:${IMAGE_TAG} \
+                  --build-arg-file .env \
+                  --verbosity info
+              """
             }
           }
         }
 
-        stage('Build Admin Service') {
+        stage('User') {
           steps {
-            container('docker') {
-              sh 'docker compose --env-file .env build admin'
-            }
-          }
-        }
-      }
-    }
-
-    stage('Tag Images') {
-      parallel {
-        stage('Tag Auth') {
-          steps {
-            container('docker') {
-              sh "docker tag auth ${AUTH_REPO}:${IMAGE_TAG}"
-            }
-          }
-        }
-
-        stage('Tag Admin') {
-          steps {
-            container('docker') {
-              sh "docker tag admin ${ADMIN_REPO}:${IMAGE_TAG}"
-            }
-          }
-        }
-
-        stage('Tag User') {
-          steps {
-            container('docker') {
-              sh "docker tag user ${USER_REPO}:${IMAGE_TAG}"
-            }
-          }
-        }
-      }
-    }
-
-    stage('Authenticate Docker') {
-      steps {
-        container('docker') {
-          withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-          }
-        }
-      }
-    }
-
-    stage('Push Images to Repo') {
-      parallel {
-        stage("Push Auth") {
-          steps {
-            container('docker') {
-              sh "docker push ${AUTH_REPO}:${IMAGE_TAG}"
-            }
-          }
-        }
-
-        stage("Push Admin") {
-          steps {
-            container('docker') {
-              sh "docker push ${ADMIN_REPO}:${IMAGE_TAG}"
-            }
-          }
-        }
-
-        stage("Push User") {
-          steps {
-            container('docker') {
-              sh "docker push ${USER_REPO}:${IMAGE_TAG}"
+            container('kaniko') {
+              sh """
+                /kaniko/executor \
+                  --context `pwd` \
+                  --dockerfile `pwd`/apps/user/Dockerfile \
+                  --destination ${USER_REPO}:${IMAGE_TAG} \
+                  --build-arg-file .env \
+                  --verbosity info
+              """
             }
           }
         }
@@ -180,10 +113,10 @@ pipeline {
 
   post {
     success {
-      echo "Pipeline Executed Successfully..."
+      echo "Images built and pushed successfully."
     }
     failure {
-      echo "Pipeline Execution Failed..."
+      echo "Pipeline failed."
     }
   }
 }
