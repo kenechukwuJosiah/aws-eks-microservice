@@ -38,3 +38,4 @@ addons:
     version: latest
   - name: coredns
     version: latest
+  - name: aws-ebs-csi-driver
