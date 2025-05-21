@@ -66,7 +66,7 @@ pipeline {
       }
     }
 
-    stage('Build Auth Image') {
+    stage('Build and Push Auth Image') {
       steps {
         container('kaniko') {
           withCredentials([
@@ -98,7 +98,7 @@ pipeline {
       }
     }
 
-    stage('Build Admin Image') {
+    stage('Build and Push Admin Image') {
       steps {
         container('kaniko') {
           withCredentials([
@@ -130,7 +130,7 @@ pipeline {
       }
     }
 
-    stage('Build User Image') {
+    stage('Build and Push User Image') {
       steps {
         container('kaniko') {
           withCredentials([
@@ -145,7 +145,7 @@ pipeline {
             sh """
               /kaniko/executor \
                 --context=${WORKSPACE} \
-                --dockerfile=${WORKSPACE}/apps/user/Dockerfile \
+                --dockerfile=${WORKSPACE}/apps/users/Dockerfile \
                 --destination=${USER_REPO}:${IMAGE_TAG} \
                 --destination=${USER_REPO}:latest \
                 --build-arg=USER_PORT=$USER_PORT \
