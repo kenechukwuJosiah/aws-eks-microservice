@@ -32,9 +32,15 @@ pipeline {
   environment {
     IMAGE_TAG = ""
     REGISTRY_BASE = "docker.io/kenechukwujosiah"
-    AUTH_REPO = "docker.io/kenechukwujosiah/eks-auth-demo"
-    ADMIN_REPO = "docker.io/kenechukwujosiah/eks-admin-demo"
-    USER_REPO = "docker.io/kenechukwujosiah/eks-user-demo"
+    AUTH_REPO = "${REGISTRY_BASE}/eks-auth-demo"
+    ADMIN_REPO = "${REGISTRY_BASE}/eks-admin-demo"
+    USER_REPO = "${REGISTRY_BASE}/eks-user-demo"
+  }
+
+  options {
+    timeout(time: 30, unit: 'MINUTES')
+    disableConcurrentBuilds()
+    timestamps()
   }
 
   stages {
@@ -60,11 +66,7 @@ pipeline {
       }
     }
 
-    stage('Build and Push Images') {
-      parallel {
-
-
-        stage('Auth') {
+    stage('Build Auth Image') {
       steps {
         container('kaniko') {
           withCredentials([
@@ -96,69 +98,65 @@ pipeline {
       }
     }
 
-        stage('Admin') {
-          steps {
-            container('kaniko') {
-              withCredentials([
-                string(credentialsId: 'admin-port', variable: 'ADMIN_PORT'),
-                string(credentialsId: 'mongodb-host', variable: 'MONGODB_HOST'),
-                string(credentialsId: 'mongodb-port', variable: 'MONGODB_PORT'),
-                string(credentialsId: 'mongodb-username', variable: 'MONGODB_USERNAME'),
-                string(credentialsId: 'mongodb-password', variable: 'MONGODB_PASSWORD'),
-                string(credentialsId: 'mongodb-database', variable: 'MONGODB_DATABASE'),
-                string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
-              ]) {
-                sh """
-                  /kaniko/executor \
-                    --context=${WORKSPACE} \
-                    --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
-                    --destination=${ADMIN_REPO}:${IMAGE_TAG} \
-                    --destination=${ADMIN_REPO}:latest \
-                    --build-arg=ADMIN_PORT=$ADMIN_PORT \
-                    --build-arg=MONGODB_HOST=$MONGODB_HOST \
-                    --build-arg=MONGODB_PORT=$MONGODB_PORT \
-                    --build-arg=MONGODB_USERNAME=$MONGODB_USERNAME \
-                    --build-arg=MONGODB_PASSWORD=$MONGODB_PASSWORD \
-                    --build-arg=MONGODB_DATABASE=$MONGODB_DATABASE \
-                    --build-arg=JWT_SECRET=$JWT_SECRET \
-                    --verbosity=info
-                """
-              }
-            }
+    stage('Build Admin Image') {
+      steps {
+        container('kaniko') {
+          withCredentials([
+            string(credentialsId: 'admin-port', variable: 'ADMIN_PORT'),
+            string(credentialsId: 'mongodb-host', variable: 'MONGODB_HOST'),
+            string(credentialsId: 'mongodb-port', variable: 'MONGODB_PORT'),
+            string(credentialsId: 'mongodb-username', variable: 'MONGODB_USERNAME'),
+            string(credentialsId: 'mongodb-password', variable: 'MONGODB_PASSWORD'),
+            string(credentialsId: 'mongodb-database', variable: 'MONGODB_DATABASE'),
+            string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
+          ]) {
+            sh """
+              /kaniko/executor \
+                --context=${WORKSPACE} \
+                --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
+                --destination=${ADMIN_REPO}:${IMAGE_TAG} \
+                --destination=${ADMIN_REPO}:latest \
+                --build-arg=ADMIN_PORT=$ADMIN_PORT \
+                --build-arg=MONGODB_HOST=$MONGODB_HOST \
+                --build-arg=MONGODB_PORT=$MONGODB_PORT \
+                --build-arg=MONGODB_USERNAME=$MONGODB_USERNAME \
+                --build-arg=MONGODB_PASSWORD=$MONGODB_PASSWORD \
+                --build-arg=MONGODB_DATABASE=$MONGODB_DATABASE \
+                --build-arg=JWT_SECRET=$JWT_SECRET \
+                --verbosity=info
+            """
           }
         }
+      }
+    }
 
-        stage('User') {
-          steps {
-            container('kaniko') {
-              container('kaniko') {
-              withCredentials([
-                string(credentialsId: 'admin-port', variable: 'USER_PORT'),
-                string(credentialsId: 'mongodb-host', variable: 'MONGODB_HOST'),
-                string(credentialsId: 'mongodb-port', variable: 'MONGODB_PORT'),
-                string(credentialsId: 'mongodb-username', variable: 'MONGODB_USERNAME'),
-                string(credentialsId: 'mongodb-password', variable: 'MONGODB_PASSWORD'),
-                string(credentialsId: 'mongodb-database', variable: 'MONGODB_DATABASE'),
-                string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
-              ]) {
-                sh """
-                  /kaniko/executor \
-                    --context=${WORKSPACE} \
-                    --dockerfile=${WORKSPACE}/apps/admin/Dockerfile \
-                    --destination=${USER_REPO}:${IMAGE_TAG} \
-                    --destination=${USER_REPO}:latest \
-                    --build-arg=USER_PORT=$USER_PORT \
-                    --build-arg=MONGODB_HOST=$MONGODB_HOST \
-                    --build-arg=MONGODB_PORT=$MONGODB_PORT \
-                    --build-arg=MONGODB_USERNAME=$MONGODB_USERNAME \
-                    --build-arg=MONGODB_PASSWORD=$MONGODB_PASSWORD \
-                    --build-arg=MONGODB_DATABASE=$MONGODB_DATABASE \
-                    --build-arg=JWT_SECRET=$JWT_SECRET \
-                    --verbosity=info
-                """
-              }
-            }
-            }
+    stage('Build User Image') {
+      steps {
+        container('kaniko') {
+          withCredentials([
+            string(credentialsId: 'user-port', variable: 'USER_PORT'),
+            string(credentialsId: 'mongodb-host', variable: 'MONGODB_HOST'),
+            string(credentialsId: 'mongodb-port', variable: 'MONGODB_PORT'),
+            string(credentialsId: 'mongodb-username', variable: 'MONGODB_USERNAME'),
+            string(credentialsId: 'mongodb-password', variable: 'MONGODB_PASSWORD'),
+            string(credentialsId: 'mongodb-database', variable: 'MONGODB_DATABASE'),
+            string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
+          ]) {
+            sh """
+              /kaniko/executor \
+                --context=${WORKSPACE} \
+                --dockerfile=${WORKSPACE}/apps/user/Dockerfile \
+                --destination=${USER_REPO}:${IMAGE_TAG} \
+                --destination=${USER_REPO}:latest \
+                --build-arg=USER_PORT=$USER_PORT \
+                --build-arg=MONGODB_HOST=$MONGODB_HOST \
+                --build-arg=MONGODB_PORT=$MONGODB_PORT \
+                --build-arg=MONGODB_USERNAME=$MONGODB_USERNAME \
+                --build-arg=MONGODB_PASSWORD=$MONGODB_PASSWORD \
+                --build-arg=MONGODB_DATABASE=$MONGODB_DATABASE \
+                --build-arg=JWT_SECRET=$JWT_SECRET \
+                --verbosity=info
+            """
           }
         }
       }
