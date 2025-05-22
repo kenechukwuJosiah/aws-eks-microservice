@@ -11,13 +11,10 @@ setup_cert_manager(){
 
   if [ "$ANS" == "Yes" ]; then
     echo "Applying Certificate and Cert Issuer..."
-    kubectl apply -f $CONFIG_PATH
+    kubectl apply -f $CONFIG_PATH --validate=false
   else
     echo "Skipping step..."
   fi
 
   echo "Setup Done."
 }
-
-
-setup_cert_manager
