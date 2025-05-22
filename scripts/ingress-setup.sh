@@ -85,5 +85,3 @@ setup_ingress_controller() {
   echo "AWS ALB Ingress Controller Setup Complete"
   echo "You can now create Ingress resources using the 'alb' IngressClass."
 }
-
-setup_ingress_controller

@@ -4,17 +4,16 @@ metadata:
   name: jenkins-ingress
   namespace: jenkins
   annotations:
+    kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/e83a7886-14bb-431b-94cf-9a16f5d9e0f1
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/group.name: default-ingress
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80, "HTTPS":443}]'
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
-  ingressClassName: alb
   tls:
     - hosts:
         - jenkins.terminus.ng
+      secretName: jenkins-tls
   rules:
     - host: jenkins.terminus.ng
       http:
