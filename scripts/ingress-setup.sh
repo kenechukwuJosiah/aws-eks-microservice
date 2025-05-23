@@ -9,7 +9,7 @@ setup_ingress_controller() {
   REGION="eu-west-1"
   POLICY_NAME="AWSLoadBalancerControllerIAMPolicy"
   SERVICE_ACCOUNT_NAME="aws-load-balancer-controller"
-  NAMESPACE="aws-load-balancer-system"
+  NAMESPACE="kube-system"
   POLICY_FILE="iam-policy.json"
 
   # Prompt for cluster name
