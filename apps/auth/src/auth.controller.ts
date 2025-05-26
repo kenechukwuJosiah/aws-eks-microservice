@@ -2,11 +2,11 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, SignupDto } from '../dto';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get()
+  @Get('ping')
   getHello(): string {
     return this.authService.ping();
   }

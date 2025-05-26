@@ -13,7 +13,7 @@ availabilityZones:
 managedNodeGroups:
   - name: ng-1
     instanceType: t3.medium
-    desiredCapacity: 2
+    desiredCapacity: 1
     privateNetworking: true
     minSize: 1
     maxSize: 3
@@ -29,3 +29,13 @@ managedNodeGroups:
         cloudWatch: true
         ebs: true
         albIngress: true
+
+addons:
+  - name: vpc-cni
+    version: latest
+    attachPolicyARNs: []
+  - name: kube-proxy
+    version: latest
+  - name: coredns
+    version: latest
+  - name: aws-ebs-csi-driver
