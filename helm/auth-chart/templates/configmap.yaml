@@ -4,3 +4,8 @@ metadata:
   name: {{ include "auth-chart.fullname" . }}
   namespace: default
 data:
+  AUTH_PORT: {{ .Values.service.targetPort | quote }}
+  MONGODB_HOST: {{ .Values.db.MONGODB_HOST | quote }}
+  MONGODB_USERNAME: {{ .Values.db.MONGODB_USERNAME | quote }}
+  MONGODB_PASSWORD: {{ .Values.db.MONGODB_PASSWORD | quote }}
+  MONGODB_DATABASE: {{ .Values.db.MONGODB_DATABASE | quote }}
