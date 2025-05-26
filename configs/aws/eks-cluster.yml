@@ -13,7 +13,7 @@ availabilityZones:
 managedNodeGroups:
   - name: ng-1
     instanceType: t3.medium
-    desiredCapacity: 2
+    desiredCapacity: 1
     privateNetworking: true
     minSize: 1
     maxSize: 3
