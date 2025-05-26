@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: {{ include "auth-chart.fullname" . }}
-  namespace: default
+  namespace: {{ .Values.namespace | default "default" }}
 data:
   AUTH_PORT: {{ .Values.service.targetPort | quote }}
   MONGODB_HOST: {{ .Values.db.MONGODB_HOST | quote }}
