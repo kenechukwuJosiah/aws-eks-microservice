@@ -46,7 +46,7 @@ service:
   targetPort: 24001
 
 ingress:
-  enabled: true
+  enabled: false
   className: 'alb'
   annotations:
     {}
