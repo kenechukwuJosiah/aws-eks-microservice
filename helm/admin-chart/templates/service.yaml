@@ -4,6 +4,7 @@ metadata:
   name: {{ include "admin-chart.fullname" . }}
   labels:
     {{- include "admin-chart.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
 spec:
   type: {{ .Values.service.type }}
   ports:
