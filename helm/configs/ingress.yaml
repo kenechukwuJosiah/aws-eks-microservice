@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: frontend-staging-ingress
+  name: admin-staging-ingress
   namespace: stage
   annotations:
     kubernetes.io/ingress.class: alb
@@ -21,15 +21,15 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: admin-frontend
                 port:
                   number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: frontend-prod-ingress
-  namespace: frontend-staging
+  name: admin-prod-ingress
+  namespace: prod
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
@@ -41,34 +41,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: prod.example.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: frontend-prod
-                port:
-                  number: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: frontend-staging-ingress
-  namespace: frontend-prod
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/backend-protocol: HTTP
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/8fefe654-0879-4aa3-bddf-97a9a922f1c5
-spec:
-  ingressClassName: alb
-  rules:
-    - host: staging.example.com
+    - host: admin.terminus.ng
       http:
         paths:
           - path: /
@@ -82,8 +55,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: frontend-prod-ingress
-  namespace: frontend
+  name: user-staging-ingress
+  namespace: stage
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
@@ -95,22 +68,22 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: prod.example.com
+    - host: user.staging.terminus.ng
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: frontend-prod
+                name: frontend
                 port:
                   number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: backend-staging-ingress
-  namespace: backend
+  name: user-prod-ingress
+  namespace: prod
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
@@ -122,7 +95,34 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: api.staging.example.com
+    - host: user.terminus.ng
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-staging-ingress
+  namespace: stage
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/8fefe654-0879-4aa3-bddf-97a9a922f1c5
+spec:
+  ingressClassName: alb
+  rules:
+    - host: api.staging.terminus.ng
       http:
         paths:
           - path: /api/auth
@@ -150,8 +150,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: backend-prod-ingress
-  namespace: backend
+  name: api-prod-ingress
+  namespace: prod
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
@@ -163,7 +163,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: api.prod.example.com
+    - host: api.terminus.ng
       http:
         paths:
           - path: /api/auth
