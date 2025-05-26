@@ -10,22 +10,22 @@ import { AdminService } from './admin.service';
 import { AuthGuard } from '@app/authguard';
 import { CreateAdminDto } from './dto';
 
-@Controller()
+@Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Get()
+  @Get('ping')
   getHello(): string {
     return this.adminService.getHello();
   }
 
-  @Get('admin')
+  @Get()
   @UseGuards(AuthGuard)
   listAdmins() {
     return this.adminService.listAdmins();
   }
 
-  @Post('admin')
+  @Post()
   @UseGuards(AuthGuard)
   createAdmin(@Body() adminData: CreateAdminDto, @Request() req) {
     const createdById = req.user._id;
