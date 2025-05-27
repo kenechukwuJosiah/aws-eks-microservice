@@ -77,7 +77,8 @@ setup_ingress_controller() {
 
   if [[ -d "$CONFIG_PATH" ]]; then
     echo "Applying ingress configuration files from $CONFIG_PATH..."
-    kubectl apply -f "$CONFIG_PATH"
+    kubectl apply -f "$CONFIG_PATH/ingressClass.yaml" || true
+    kubectl apply -f "$CONFIG_PATH/ingress.yaml" || true
   else
     echo "Warning: Config path '$CONFIG_PATH' does not exist or is not a directory. Skipping apply."
   fi
