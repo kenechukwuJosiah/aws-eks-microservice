@@ -16,6 +16,14 @@ setup_appcharts() {
     ["auth"]="./helm/auth-chart"
   )
 
+  read -rp "Which namespace would you like to use? (stage|prod): " namespace
+
+  if [[ "$namespace" != "stage" && "$namespace" != "prod" ]]; then
+    echo "Invalid namespace: $namespace"
+    echo "Usage: setup_appcharts [stage|prod]"
+    return 1
+  fi
+
   for chart in "${!charts[@]}"; do
     chart_path="${charts[$chart]}"
     values_file="$chart_path/values.yaml"
@@ -23,11 +31,11 @@ setup_appcharts() {
     case "$action" in
       install)
         echo "Installing $chart..."
-        helm install "$chart" "$chart_path" --values "$values_file"
+        helm install "$chart" "$chart_path" -n $namespace --values "$values_file" -f "./helm/values/$namespace.yaml"
         ;;
       update)
         echo "Updating $chart..."
-        helm upgrade "$chart" "$chart_path" --values "$values_file"
+        helm upgrade "$chart" "$chart_path" -n $namespace --values "$values_file" -f "./helm/values/$namespace.yaml"
         ;;
       delete)
         echo "Deleting $chart..."

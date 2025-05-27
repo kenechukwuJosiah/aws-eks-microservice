@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: admin-staging-ingress
+  name: admin-ingress
   namespace: stage
   annotations:
     kubernetes.io/ingress.class: alb
@@ -10,7 +10,7 @@ metadata:
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/8fefe654-0879-4aa3-bddf-97a9a922f1c5
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/46b5da73-3407-46bf-82ce-ef4042a83985
 spec:
   ingressClassName: alb
   rules:
@@ -28,7 +28,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: admin-prod-ingress
+  name: admin-ingress
   namespace: prod
   annotations:
     kubernetes.io/ingress.class: alb
@@ -37,7 +37,7 @@ metadata:
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/8fefe654-0879-4aa3-bddf-97a9a922f1c5
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/615b5fe5-9f0f-4243-9af2-c2ff9cb48681
 spec:
   ingressClassName: alb
   rules:
@@ -55,7 +55,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: user-staging-ingress
+  name: user-ingress
   namespace: stage
   annotations:
     kubernetes.io/ingress.class: alb
@@ -64,11 +64,11 @@ metadata:
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/8fefe654-0879-4aa3-bddf-97a9a922f1c5
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/18d01216-87b6-45d3-9a19-328d65fb28a2
 spec:
   ingressClassName: alb
   rules:
-    - host: user.staging.terminus.ng
+    - host: app.staging.terminus.ng
       http:
         paths:
           - path: /
@@ -82,7 +82,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: user-prod-ingress
+  name: user-ingress
   namespace: prod
   annotations:
     kubernetes.io/ingress.class: alb
@@ -91,11 +91,11 @@ metadata:
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/8fefe654-0879-4aa3-bddf-97a9a922f1c5
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/7831fff2-df38-498a-a246-a24c19c70aa3
 spec:
   ingressClassName: alb
   rules:
-    - host: user.terminus.ng
+    - host: app.terminus.ng
       http:
         paths:
           - path: /
@@ -109,7 +109,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api-staging-ingress
+  name: api-ingress
   namespace: stage
   annotations:
     kubernetes.io/ingress.class: alb
@@ -118,7 +118,7 @@ metadata:
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/8fefe654-0879-4aa3-bddf-97a9a922f1c5
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/6938c98e-74a4-4f6d-b38d-c90b84a45026
 spec:
   ingressClassName: alb
   rules:
@@ -129,28 +129,28 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: auth-staging
+                name: auth
                 port:
                   number: 80
           - path: /api/user
             pathType: Prefix
             backend:
               service:
-                name: user-staging
+                name: user
                 port:
                   number: 80
           - path: /api/admin
             pathType: Prefix
             backend:
               service:
-                name: admin-staging
+                name: admin
                 port:
                   number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api-prod-ingress
+  name: api-ingress
   namespace: prod
   annotations:
     kubernetes.io/ingress.class: alb
@@ -159,7 +159,7 @@ metadata:
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/8fefe654-0879-4aa3-bddf-97a9a922f1c5
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:557690621394:certificate/152c2738-71eb-4cd2-9e9d-cc379e7302a5
 spec:
   ingressClassName: alb
   rules:
@@ -170,20 +170,20 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: auth-prod
+                name: auth
                 port:
                   number: 80
           - path: /api/user
             pathType: Prefix
             backend:
               service:
-                name: user-prod
+                name: user
                 port:
                   number: 80
           - path: /api/admin
             pathType: Prefix
             backend:
               service:
-                name: admin-prod
+                name: admin
                 port:
                   number: 80
