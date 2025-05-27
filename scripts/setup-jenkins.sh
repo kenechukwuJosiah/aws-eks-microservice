@@ -11,10 +11,14 @@ setup_jenkins() {
   fi
 
   set -e
-  kubectl create namespace jenkins || { echo "Failed to create namespace"; exit 1; }
+  if ! kubectl get namespace jenkins >/dev/null 2>&1; then
+    kubectl create namespace jenkins || { echo "Failed to create namespace"; exit 1; }
+  else
+    echo "Namespace 'jenkins' already exists. Skipping creation."
+  fi
   kubectl apply -f $CONFIG_DIR || { echo "Error occured while tying to apply jenkins config"; exit 1; }
 
   echo "Run command to get all resources in namespace jenkins"
-  echo "kubeclt get all -n jenkins"
+  echo "kubectl get all -n jenkins"
 
 }

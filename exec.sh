@@ -30,8 +30,23 @@ case "$COMMAND" in
     setup_jenkins
     ;;
 
+  cert)
+    source "$(dirname "$0")/scripts/setup-cert_manager.sh"
+    setup_cert_manager
+    ;;
+
+  mongo)
+    source "$(dirname "$0")/scripts/setup_mongodb.sh"
+    setup_mongodb
+    ;;
+
+  namespaces)
+    source "$(dirname "$0")/scripts/setup_namespaces.sh"
+    setup_namespace
+    ;;
+
   *)
-    echo "Usage: $0 {cluster|chart|ingress|argocd|jenkins} <subcommands> [options]"
+    echo "Usage: $0 {cluster|chart|ingress|argocd|jenkins|cert|mongo} <subcommands> [options]"
     exit 1
     ;;
 

@@ -4,6 +4,7 @@ metadata:
   name: {{ include "admin-chart.fullname" . }}
   labels:
     {{- include "admin-chart.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -35,17 +36,22 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "admin-chart.fullname" . }}
+            - secretRef:
+                name: {{ include "admin-chart.fullname" . }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /api/admin/ping
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: /api/admin/ping
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

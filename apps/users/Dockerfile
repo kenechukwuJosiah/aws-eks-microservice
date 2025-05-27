@@ -2,6 +2,8 @@ FROM node:22-alpine
 
 WORKDIR /app
 
+EXPOSE 24001
+
 COPY package*.json tsconfig.build.json ./
 
 RUN npm i

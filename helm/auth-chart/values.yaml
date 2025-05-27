@@ -7,11 +7,21 @@ replicaCount: 1
 image:
   repository: kenechukwujosiah/eks-auth-demo
   pullPolicy: Always
-  tag: 'latest'
+  tag: 'e9612442eafc'
 
 imagePullSecrets: []
 nameOverride: 'auth'
 fullnameOverride: ''
+
+db:
+  MONGODB_HOST: 'mongo-mongodb.mongo.svc.cluster.local'
+  MONGODB_PORT: 27017
+  MONGODB_USERNAME: 'admin'
+  MONGODB_PASSWORD: 'u9028209LDIW98209JLSKJ'
+  MONGODB_DATABASE: 'eksdemo'
+
+auth:
+  JWT_SECRET: '7KKAJDOI2984928OFSLKDJFALKSLJFALKSJFO2IU'
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -46,7 +56,7 @@ service:
   targetPort: 24002
 
 ingress:
-  enabled: true
+  enabled: false
   className: 'alb'
   annotations:
     {}
@@ -61,7 +71,6 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
 resources:
   {}
   # We usually recommend not to specify default resources and to leave this as a conscious
