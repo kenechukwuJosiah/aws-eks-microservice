@@ -40,6 +40,11 @@ case "$COMMAND" in
     setup_mongodb
     ;;
 
+  namespaces)
+    source "$(dirname "$0")/scripts/setup_namespaces.sh"
+    setup_namespace
+    ;;
+
   *)
     echo "Usage: $0 {cluster|chart|ingress|argocd|jenkins|cert|mongo} <subcommands> [options]"
     exit 1
