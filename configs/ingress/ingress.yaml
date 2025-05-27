@@ -68,7 +68,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: user.staging.terminus.ng
+    - host: app.staging.terminus.ng
       http:
         paths:
           - path: /
@@ -95,7 +95,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: user.terminus.ng
+    - host: app.terminus.ng
       http:
         paths:
           - path: /
