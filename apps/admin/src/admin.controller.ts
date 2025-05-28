@@ -15,8 +15,8 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Get('ping')
-  getHello(): string {
-    return this.adminService.getHello();
+  ping(): { message: string; time: string } {
+    return this.adminService.ping();
   }
 
   @Get()

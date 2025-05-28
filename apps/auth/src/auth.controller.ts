@@ -7,7 +7,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('ping')
-  getHello(): string {
+  ping(): { message: string; time: string } {
     return this.authService.ping();
   }
 
