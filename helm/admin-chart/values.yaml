@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: kenechukwujosiah/eks-admin-demo
   pullPolicy: Always
-  tag: '6a15ca5d9276'
+  tag: '7b82438'
 
 imagePullSecrets: []
 nameOverride: 'admin'
