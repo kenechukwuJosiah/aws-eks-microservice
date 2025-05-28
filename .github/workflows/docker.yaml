@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
 
+env:
+  REPOSITORY: kenechukwujosiah
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,7 +24,24 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker images
+      - name: Extract Git SHA
+        id: vars
+        run: echo "SHA=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Admin Image
         run: |
-          docker compose build
-          docker compose push
+          docker build -t ${{env.REPOSITORY}}/eks-admin-demo:latest -t ${{env.REPOSITORY}}/eks-admin-demo:${{ steps.vars.outputs.SHA }} -f apps/admin/Dockerfile .
+          docker push ${{env.REPOSITORY}}/eks-admin-demo:latest
+          docker push ${{env.REPOSITORY}}/eks-admin-demo:${{ steps.vars.outputs.SHA }}
+
+      - name: Build and Push User Image
+        run: |
+          docker build -t ${{env.REPOSITORY}}/eks-user-demo:latest -t ${{env.REPOSITORY}}/eks-user-demo:${{ steps.vars.outputs.SHA }} -f apps/users/Dockerfile .
+          docker push ${{env.REPOSITORY}}/eks-user-demo:latest
+          docker push ${{env.REPOSITORY}}/eks-user-demo:${{ steps.vars.outputs.SHA }}
+
+      - name: Build and Push Auth Image
+        run: |
+          docker build -t ${{env.REPOSITORY}}/eks-auth-demo:latest -t ${{env.REPOSITORY}}/eks-auth-demo:${{ steps.vars.outputs.SHA }} -f apps/auth/Dockerfile .
+          docker push ${{env.REPOSITORY}}/eks-auth-demo:latest
+          docker push ${{env.REPOSITORY}}/eks-auth-demo:${{ steps.vars.outputs.SHA }}
