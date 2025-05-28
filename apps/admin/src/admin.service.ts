@@ -37,7 +37,10 @@ export class AdminService {
     return await this.adminRepository.find();
   }
 
-  getHello(): string {
-    return 'Hello World!';
+  ping(): { message: string; time: string } {
+    return {
+      message: 'Pong from Users Service!',
+      time: new Date().toISOString(),
+    };
   }
 }
