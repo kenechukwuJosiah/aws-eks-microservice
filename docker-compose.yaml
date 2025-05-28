@@ -7,8 +7,8 @@ services:
     build:
       context: .
       dockerfile: ./apps/auth/Dockerfile
-    ports:
-      - '${AUTH_PORT}:${AUTH_PORT}'
+    # ports:
+    #   - '${AUTH_PORT}:${AUTH_PORT}'
     env_file:
       - .env
 
@@ -16,8 +16,8 @@ services:
     build:
       context: .
       dockerfile: ./apps/users/Dockerfile
-    ports:
-      - '${USER_PORT}:${USER_PORT}'
+    # ports:
+    #   - '${USER_PORT}:${USER_PORT}'
     env_file:
       - .env
 
@@ -25,7 +25,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/admin/Dockerfile
-    ports:
-      - '${ADMIN_PORT}:${ADMIN_PORT}'
+    # ports:
+    #   - '${ADMIN_PORT}:${ADMIN_PORT}'
     env_file:
       - .env
