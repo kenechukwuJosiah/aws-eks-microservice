@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: kenechukwujosiah/eks-auth-demo
   pullPolicy: Always
-  tag: 'e9612442eafc'
+  tag: '7b82438'
 
 imagePullSecrets: []
 nameOverride: 'auth'
