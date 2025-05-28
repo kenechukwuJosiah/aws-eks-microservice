@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
-  getHello(): string {
-    return 'Hello World!';
+  ping(): { message: string; time: string } {
+    return {
+      message: 'Pong from Users Service!',
+      time: new Date().toISOString(),
+    };
   }
 }

@@ -14,10 +14,6 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  ping(): string {
-    return 'Auth service is up and running!';
-  }
-
   async login(loginPayload: LoginDto): Promise<string> {
     const { username, password } = loginPayload;
     const user = await this.userRepository.findOne({ where: { username } });
@@ -57,5 +53,12 @@ export class AuthService {
       throw new BadRequestException('User not found');
     }
     return user;
+  }
+
+  ping(): { message: string; time: string } {
+    return {
+      message: 'Pong from Users Service!',
+      time: new Date().toISOString(),
+    };
   }
 }
