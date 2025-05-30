@@ -11,6 +11,8 @@ import { User } from '../entities';
     TypeOrmModule.forRoot({
       type: 'mongodb',
       host: process.env.MONGODB_HOST,
+      username: process.env.MONGODB_USERNAME,
+      password: process.env.MONGODB_PASSWORD,
       port: parseInt(process.env.MONGODB_PORT) as number,
       database: process.env.MONGODB_DATABASE,
       entities: [User],
