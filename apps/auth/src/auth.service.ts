@@ -57,7 +57,7 @@ export class AuthService {
 
   ping(): { message: string; time: string } {
     return {
-      message: 'Pong from Users Service!',
+      message: 'Pong from Auth Service!',
       time: new Date().toISOString(),
     };
   }

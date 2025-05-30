@@ -21,7 +21,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: admin-frontend
+                name: admin-frontend-stage
                 port:
                   number: 80
 ---
@@ -48,7 +48,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: admin-frontend-live
                 port:
                   number: 80
 ---
@@ -75,7 +75,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: user-frontend-stage
                 port:
                   number: 80
 ---
@@ -102,7 +102,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: user-frontend-live
                 port:
                   number: 80
 ---
@@ -129,21 +129,21 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: auth
+                name: api-auth-stage
                 port:
                   number: 80
           - path: /api/user
             pathType: Prefix
             backend:
               service:
-                name: user
+                name: api-user-stage
                 port:
                   number: 80
           - path: /api/admin
             pathType: Prefix
             backend:
               service:
-                name: admin
+                name: api-admin-stage
                 port:
                   number: 80
 ---
@@ -170,20 +170,20 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: auth
+                name: api-auth-live
                 port:
                   number: 80
           - path: /api/user
             pathType: Prefix
             backend:
               service:
-                name: user
+                name: api-user-live
                 port:
                   number: 80
           - path: /api/admin
             pathType: Prefix
             backend:
               service:
-                name: admin
+                name: api-admin-live
                 port:
                   number: 80
