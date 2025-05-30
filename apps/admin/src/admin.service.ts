@@ -39,7 +39,7 @@ export class AdminService {
 
   ping(): { message: string; time: string } {
     return {
-      message: 'Pong from Users Service!',
+      message: 'Pong from Admin Service!',
       time: new Date().toISOString(),
     };
   }
