@@ -7,8 +7,10 @@ setup_monitoring() {
   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
   helm repo update
 
-  helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -f custom-values.yaml
-
+  helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+    --namespace monitoring \
+    --create-namespace
+    
   echo "To access Grafana, run the following command to get the admin password and username:"
 
   echo "kubectl get secret --namespace default kube-prometheus-stack-grafana -o jsonpath=\"{.data.admin-password}\" | base64 --decode; echo"
