@@ -21,5 +21,7 @@ setup_monitoring() {
   echo "kubectl port-forward svc/prometheus-stack-grafana -n monitoring 3000:80"
   echo "Grafana is now running on port 3000. You can access it via your web browser."
 
+  kubectl apply -n monitoring -f ./configs/monitor || { echo "Failed to apply Ingress"; exit 1; }
+
   echo "Prometheus and Grafana setup completed successfully."
 }
