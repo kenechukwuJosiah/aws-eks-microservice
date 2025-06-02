@@ -51,7 +51,7 @@ case "$COMMAND" in
     ;;
 
   *)
-    echo "Usage: $0 {cluster|chart|ingress|argocd|jenkins|cert|mongo} <subcommands> [options]"
+    echo "Usage: $0 {cluster|chart|ingress|argocd|jenkins|cert|mongo|monitor} <subcommands> [options]"
     exit 1
     ;;
 
