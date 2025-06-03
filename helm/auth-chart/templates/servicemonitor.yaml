@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "auth-chart.fullname" . }}
+  labels:
+    release: prometheus-stack
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+{{ include "auth-chart.selectorLabels" . | indent 6 }}
+  endpoints:
+    - port: http
+      path: /api/metrics
+      interval: 20s
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.namespace | default .Release.Namespace }}
+
