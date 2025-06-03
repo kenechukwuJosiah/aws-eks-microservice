@@ -21,7 +21,9 @@
       "@app/database": ["libs/database/src"],
       "@app/database/*": ["libs/database/src/*"],
       "@app/authguard": ["libs/authguard/src"],
-      "@app/authguard/*": ["libs/authguard/src/*"]
+      "@app/authguard/*": ["libs/authguard/src/*"],
+      "@app/prometheus": ["libs/prometheus/src"],
+      "@app/prometheus/*": ["libs/prometheus/src/*"]
     }
   }
 }

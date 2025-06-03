@@ -54,6 +54,16 @@
       "compilerOptions": {
         "tsConfigPath": "libs/authguard/tsconfig.lib.json"
       }
+    },
+
+    "prometheus": {
+      "type": "library",
+      "root": "libs/prometheus",
+      "entryFile": "index",
+      "sourceRoot": "libs/prometheus/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/prometheus/tsconfig.lib.json"
+      }
     }
   }
 }
