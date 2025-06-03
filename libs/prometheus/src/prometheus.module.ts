@@ -6,4 +6,4 @@ import { PrometheusService } from './prometheus.service';
   controllers: [PrometheusController],
   providers: [PrometheusService],
 })
-export class AppModule {}
+export class prometheusModule {}
