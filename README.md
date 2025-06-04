@@ -2,6 +2,18 @@
 
 This project is a demo of how to deploy a microservices application to an Elastic Container Service (EKS) using Kubernetes, Helm, ArgoCD, Jenkins, and GitHub Actions.
 
+## Features
+
+- **Microservices Architecture**: Modular design with separate services for authentication, admin, and user management.
+- **Containerization**: All services are Dockerized for consistent deployment.
+- **Kubernetes Deployment**: Uses Helm charts for managing Kubernetes resources.
+- **CI/CD Integration**: Automated pipelines with Jenkins and GitHub Actions for building, testing, and deploying services.
+- **GitOps with ArgoCD**: Declarative deployment and environment management using ArgoCD.
+- **Environment Isolation**: Separate branches and namespaces for development, staging, and production.
+- **Ingress Management**: Automated setup of AWS Load Balancer Controller and SSL/TLS certificates.
+- **Monitoring**: Integrated Prometheus and Grafana for observability.
+- **Database Integration**: MongoDB setup and management for persistent storage.
+
 ## Overview
 
 This project consists of three microservices: `auth`, `admin`, and `user`. These services are built using NestJS and are containerized using Docker. The services are then deployed to an EKS cluster using a Helm chart and ArgoCD.
