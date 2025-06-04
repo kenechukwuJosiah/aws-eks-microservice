@@ -46,7 +46,7 @@ case "$COMMAND" in
     ;;
 
   monitor)
-    source "$(dirname "$0")/scripts/setup-monitor.sh"
+    source "$(dirname "$0")/scripts/setup-monitoring.sh"
     setup_monitoring
     ;;
 
