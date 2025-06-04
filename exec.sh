@@ -45,8 +45,13 @@ case "$COMMAND" in
     setup_namespace
     ;;
 
+  monitor)
+    source "$(dirname "$0")/scripts/setup-monitor.sh"
+    setup_monitoring
+    ;;
+
   *)
-    echo "Usage: $0 {cluster|chart|ingress|argocd|jenkins|cert|mongo} <subcommands> [options]"
+    echo "Usage: $0 {cluster|chart|ingress|argocd|jenkins|cert|mongo|monitor} <subcommands> [options]"
     exit 1
     ;;
 

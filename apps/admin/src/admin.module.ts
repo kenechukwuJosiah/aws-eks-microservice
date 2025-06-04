@@ -4,6 +4,7 @@ import { AdminService } from './admin.service';
 import { DatabaseModule } from '@app/database';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { JwtModule } from '@nestjs/jwt';
       }),
       inject: [ConfigService],
     }),
+    PrometheusModule.register(),
   ],
   controllers: [AdminController],
   providers: [AdminService],
