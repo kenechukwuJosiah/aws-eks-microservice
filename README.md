@@ -1,85 +1,127 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# EKS Demo
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project is a demo of how to deploy a microservices application to an Elastic Container Service (EKS) using Kubernetes, Helm, ArgoCD, Jenkins, and GitHub Actions.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Overview
 
-## Description
+This project consists of three microservices: `auth`, `admin`, and `user`. These services are built using NestJS and are containerized using Docker. The services are then deployed to an EKS cluster using a Helm chart and ArgoCD.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Branching Strategy
 
-## Project setup
+This repository uses four main branches: `main`, `develop`, `stage`, and `prod`.
+
+- **main**: Used for continuous integration (CI). Commits to this branch trigger tests, build the application, and push Docker images to Docker Hub.
+- **develop**: Used for ongoing development and feature integration.
+- **stage**: ArgoCD watches this branch to automatically update resources in the staging environment.
+- **prod**: ArgoCD watches this branch to automatically update resources in the production environment.
+
+## Services
+
+### Auth Service
+
+The auth service is responsible for handling authentication and authorization. It uses a MongoDB database to store user credentials and provides an API for clients to authenticate and obtain an access token.
+
+### Admin Service
+
+The admin service is responsible for managing the application's admin users. It provides an API for creating, reading, updating, and deleting admin users.
+
+### User Service
+
+The user service is responsible for managing the application's users. It provides an API for creating, reading, updating, and deleting users.
+
+## Requirements
+
+You need to have the following tools installed on your machine:
+
+- Docker
+- Node.js (20 or later)
+- Helm
+- ArgoCD CLI
+- Kubectl
+- AWS CLI
+- Kubernetes cluster (EKS)
+
+## Setup
+
+### Script Usage
+
+The script `exec.sh` is a wrapper around the individual scripts in the `scripts` directory. It takes a single argument, which is the name of the script to run, and passes any additional arguments to that script.
+
+The available commands are:
+
+- `cluster`: Run the `cluster-setup.sh` script to set up the EKS cluster.
+- `chart`: Run the `helm-charts-setup.sh` script to deploy services using helm.
+- `ingress`: Runs the `ingress-setup.sh` script to set up the AWS Load Balancer Controller, provision ingress resources, and configure TLS/SSL using AWS Certificate Manager. Each ingress resource will have its own AWS load balancer automatically created and associated with the appropriate SSL certificate.
+- `jenkins`: Run the `setup-jenkins.sh` script to set up the Jenkins server.
+- `cert`: Run the `setup-cert_manager.sh` script to set up the cert-manager.
+- `argocd`: Run the `setup-cert_manager.sh` script to set up the cert-manager.
+- `mongo`: Run the `setup_mongodb.sh` script to set up the MongoDB database.
+- `namespaces`: Run the `setup_namespaces.sh` script to set up the namespaces.
+- `monitor`: Run the `setup-monitoring.sh` script to set up the monitoring for your infrastructure and workload using Prometheus and Grafana.
+
+### Example Usage
+
+Make the script executable:
 
 ```bash
-$ npm install
+chmod u+x ./exec.sh
 ```
 
-## Compile and run the project
+Set up the EKS cluster:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+./exec.sh cluster
 ```
 
-## Run tests
+Set up namespaces:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+./exec.sh namespaces
 ```
 
-## Resources
+Install the ingress controller:
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+./exec.sh ingress
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Install ArgoCD:
 
-## Support
+```bash
+./exec.sh argocd
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Set up monitoring (Prometheus & Grafana):
 
-## Stay in touch
+```bash
+./exec.sh monitor
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Install MongoDB:
 
-## License
+```bash
+./exec.sh mongo
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+(Optional) Deploy services using Helm since you'll be deploying with argocd:
+
+```bash
+./exec.sh chart
+```
+
+(Optional) Set up Jenkins:
+
+```bash
+./exec.sh jenkins
+```
+
+## Contributing
+
+Contributions are welcome! To contribute:
+
+1. Fork the repository and create your branch from `develop`.
+2. Make your changes and ensure code quality and tests pass.
+3. Submit a pull request to the `develop` branch with a clear description of your changes.
+4. Address any review comments and update your pull request as needed.
+
+Please follow the existing code style and include relevant documentation or tests with your contribution.
