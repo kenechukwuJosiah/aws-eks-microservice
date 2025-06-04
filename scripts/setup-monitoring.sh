@@ -9,7 +9,9 @@ setup_monitoring() {
 
   helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
     --namespace monitoring \
-    --create-namespace
+    --create-namespace \
+    --set prometheus.prometheusSpec.serviceMonitorSelectorMatchLabels.release=prometheus \
+    --set prometheus.prometheusSpec.serviceMonitorNamespaceSelector={}
     
   echo "To access Grafana, run the following command to get the admin password and username:"
 
