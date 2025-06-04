@@ -3,7 +3,7 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "user-chart.fullname" . }}
   labels:
-    release: prometheus-stack
+    release: prometheus
   namespace: {{ .Values.namespace | default .Release.Namespace }}
 spec:
   selector:
